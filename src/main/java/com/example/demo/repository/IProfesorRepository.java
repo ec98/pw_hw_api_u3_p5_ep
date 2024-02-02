@@ -16,6 +16,8 @@ public interface IProfesorRepository {
 
 	// Parcial
 	public void updateParcial(int edad, String estadoCivil, String cedula);
-
+	
+	public void updateParcial2(String titulo, String estadoCivil, String cedula);
+	
 	public List<Profesor> filterTE(String titulo, int edad);
 }

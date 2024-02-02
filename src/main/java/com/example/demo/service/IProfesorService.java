@@ -18,6 +18,9 @@ public interface IProfesorService {
 	// Parcial
 	public void actualizarPartial(int edad, String estadoCivil, String cedula);
 	
+	public void actualizarPartial2(String titulo, String estadoCivil, String cedula);
+
+	
 	public List<Profesor> filtroPorEdad(String titulo, int edad);
 
 }

@@ -49,4 +49,10 @@ public class ProfesorServiceImpl implements IProfesorService {
 		// TODO Auto-generated method stub
 		return this.profesorRepository.filterTE(titulo, edad);
 	}
+
+	@Override
+	public void actualizarPartial2(String titulo, String estadoCivil, String cedula) {
+		// TODO Auto-generated method stub
+		this.profesorRepository.updateParcial2(titulo, estadoCivil, cedula);
+	}
 }
