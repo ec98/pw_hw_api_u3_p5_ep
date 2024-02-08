@@ -3,6 +3,10 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -68,9 +72,13 @@ public class ProfesorControllerRestFul {
 //	}
 
 	// CRUD - PATCH
-	@GetMapping(path = "/{cedula}")
-	public Profesor encontrar(@PathVariable String cedula) {
-		return this.profesorService.buscando(cedula);
+	@GetMapping(path = "/{cedula}", produces = MediaType.APPLICATION_XML_VALUE)
+	public ResponseEntity<Profesor> encontrar(@PathVariable String cedula) {
+		Profesor prof = this.profesorService.buscando(cedula);
+		// status and body
+//		int status = 240;
+//		return ResponseEntity.status(status).body(prof);
+		return ResponseEntity.status(HttpStatus.OK).body(prof);
 	}
 
 	/**
@@ -80,18 +88,25 @@ public class ProfesorControllerRestFul {
 	 * @return listProfesor.
 	 */
 
-	@GetMapping
-	public List<Profesor> listProfesor(@RequestParam(required = true) String titulo,
+	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
+	public ResponseEntity<List<Profesor>> listProfesor(@RequestParam(required = true) String titulo,
 			@RequestParam(required = true) int edad) {
-		return this.profesorService.filtroPorEdad(titulo, edad);
+		List<Profesor> list = this.profesorService.filtroPorEdad(titulo, edad);
+		// status and headers
+//		int status = 242;
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("msj_242", "Enviando informacion de PROFESOR");
+		headers.add("msj_242_satisfaccion", "El proceso de PROFESOR ha sido satisfactorio");
+		// nuevo retorn(list,headers,statusCode)
+		return new ResponseEntity<>(list, headers, HttpStatus.OK);
 	}
 
-	@PostMapping
+	@PostMapping(consumes = MediaType.APPLICATION_XML_VALUE)
 	public void almacenar(@RequestBody Profesor profesor) {
 		this.profesorService.creando(profesor);
 	}
 
-	@PutMapping(path = "/{cedula}")
+	@PutMapping(path = "/{cedula}", consumes = MediaType.APPLICATION_XML_VALUE)
 	public void actualizar(@RequestBody Profesor profesor, @PathVariable(required = true) String cedula) {
 		profesor.setCedula(cedula);
 		this.profesorService.actualizando(profesor);
@@ -102,7 +117,7 @@ public class ProfesorControllerRestFul {
 //		this.profesorService.actualizarPartial(profesor.getEdad(), profesor.getEstadoCivil(), cedula);
 //	}
 
-	@PatchMapping(path = "/{cedula}")
+	@PatchMapping(path = "/{cedula}", consumes = MediaType.APPLICATION_XML_VALUE)
 	public void updatePartial2(@RequestBody Profesor profesor, @PathVariable(required = true) String cedula) {
 		this.profesorService.actualizarPartial2(profesor.getTitulo(), profesor.getEstadoCivil(), cedula);
 	}
@@ -111,4 +126,19 @@ public class ProfesorControllerRestFul {
 	public void eliminar(@PathVariable String cedula) {
 		this.profesorService.eliminando(cedula);
 	}
+
+//	@GetMapping(path = "/respuesta/{cedula}", consumes = MediaType.APPLICATION_XML_VALUE)
+//	public void respuesta(@PathVariable String cedula) {
+//		try {
+//			ResponseEntity<Profesor> pf = encontrar(cedula);
+//			if (pf != null) {
+//				System.out.println("Profesor encontrado -> " + pf.toString());
+//			} else {
+//				System.out.println("Profesor no encontrado");
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+
 }

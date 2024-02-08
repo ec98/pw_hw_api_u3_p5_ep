@@ -55,4 +55,6 @@ public class ProfesorServiceImpl implements IProfesorService {
 		// TODO Auto-generated method stub
 		this.profesorRepository.updateParcial2(titulo, estadoCivil, cedula);
 	}
+
+
 }

@@ -57,6 +57,18 @@ public class ProfesorRepositoryImpl implements IProfesorRepository {
 	}
 
 	@Override
+	public void updateParcial2(String titulo, String estadoCivil, String cedula) {
+		// TODO Auto-generated method stub
+		Query query = this.entityManager
+				.createQuery("UPDATE Profesor p SET p.titulo=:valor1, p.estadoCivil=:valor2 WHERE p.cedula=:valor3");
+		query.setParameter("valor1", titulo);
+		query.setParameter("valor2", estadoCivil);
+		query.setParameter("valor3", cedula);
+
+		query.executeUpdate();
+	}
+
+	@Override
 	public List<Profesor> filterTE(String titulo, int edad) {
 		// TODO Auto-generated method stub
 		TypedQuery<Profesor> typedQuery = this.entityManager
@@ -66,14 +78,4 @@ public class ProfesorRepositoryImpl implements IProfesorRepository {
 		return typedQuery.getResultList();
 	}
 
-	@Override
-	public void updateParcial2(String titulo, String estadoCivil, String cedula) {
-		// TODO Auto-generated method stub
-		Query query = this.entityManager.createQuery("UPDATE Profesor p SET p.titulo=:valor1, p.estadoCivil=:valor2 WHERE p.cedula=:valor3");
-		query.setParameter("valor1", titulo);
-		query.setParameter("valor2", estadoCivil);
-		query.setParameter("valor3", cedula);
-		
-		query.executeUpdate();
-	}
 }
