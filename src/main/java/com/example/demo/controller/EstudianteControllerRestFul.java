@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.repository.modelo.Estudiante;
 import com.example.demo.service.IEstudianteService;
+import com.example.demo.service.IMateriaService;
+import com.example.demo.service.to.EstudianteTO;
+import com.example.demo.service.to.MateriaTO;
 
 //una API tiene muchos servicios
 //API: por el proyecto JAVA
@@ -32,6 +35,8 @@ public class EstudianteControllerRestFul {
 	@Autowired
 	private IEstudianteService estudianteService;
 
+	@Autowired
+	private IMateriaService materiaService;
 	// Metodos: capacidades
 //	@PostMapping(path = "/guardar")
 //	public void guardar(@RequestBody Estudiante estudiante) {
@@ -77,7 +82,7 @@ public class EstudianteControllerRestFul {
 //	}
 
 	// Buscar a partir de la ID.
-	@GetMapping(path = "/{id}",produces = MediaType.APPLICATION_XML_VALUE)
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<Estudiante> consultar(@PathVariable int id) {
 		// 240: grupo satisfactorias
 		// 240: recurso ESTUDIANTE encontrado satisfactoriamente
@@ -89,7 +94,7 @@ public class EstudianteControllerRestFul {
 		return ResponseEntity.status(HttpStatus.OK).body(estu);
 	}
 
-	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
+	@GetMapping(path = "/tmp", produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<List<Estudiante>> selectAll(
 			@RequestParam(required = false, defaultValue = "Masculino") String genero) {
 		List<Estudiante> estu = this.estudianteService.consultAll(genero);
@@ -100,16 +105,33 @@ public class EstudianteControllerRestFul {
 		cabeceras.add("msj_inf_242", "El sistema se va a estar en mantenimiento");
 		return new ResponseEntity<>(estu, cabeceras, status);
 	}
-	
-	//Tambien puede haber dos contenidos en uno solo en la capacidad.
-	//@PostMapping(consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
-	//"produces" es para tipo de retorno
+
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<EstudianteTO>> selectAllHateoas() {
+		List<EstudianteTO> estuTo = this.estudianteService.consultAllTo();
+		return ResponseEntity.status(HttpStatus.OK).body(estuTo);
+	}
+
+	// http://localhost:8086://API/v1.0/Matricula/estudiantes GET
+	// http://localhost:8086://API/v1.0/Matricula/estudiantes/1 GET
+	// http://localhost:8086://API/v1.0/Matricula/estudiantes/1/materias GET
+
+	@GetMapping(path = "/{id}/materias", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<MateriaTO>> consultMateriaId(@PathVariable(required = true) int id) {
+		List<MateriaTO> listTo = this.materiaService.buscarIdEstud(id);
+		return ResponseEntity.status(HttpStatus.OK).body(listTo);
+	}
+
+	// Tambien puede haber dos contenidos en uno solo en la capacidad.
+	// @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE, produces =
+	// MediaType.APPLICATION_XML_VALUE)
+	// "produces" es para tipo de retorno
 	@PostMapping(consumes = MediaType.APPLICATION_XML_VALUE)
 	public void guardar(@RequestBody Estudiante estudiante) {
 		this.estudianteService.guardar(estudiante);
 	}
 
-	@PutMapping(path = "/{id}",consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void actualizar(@RequestBody Estudiante estudiante, @PathVariable int id) {
 		// actualizar la informacion del estudiante o por su Id
 		estudiante.setId(id);
