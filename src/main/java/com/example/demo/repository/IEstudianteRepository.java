@@ -19,4 +19,6 @@ public interface IEstudianteRepository {
 	public void eliminar(Integer id);
 	
 	public List<Estudiante> selectAll(String genero);
+	
+	
 }

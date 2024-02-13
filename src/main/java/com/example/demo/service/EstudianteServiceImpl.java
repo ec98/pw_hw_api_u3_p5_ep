@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.repository.IEstudianteRepository;
 import com.example.demo.repository.modelo.Estudiante;
+import com.example.demo.service.to.EstudianteLigeroTO;
 import com.example.demo.service.to.EstudianteTO;
 
 @Service
@@ -69,6 +70,20 @@ public class EstudianteServiceImpl implements IEstudianteService {
 		return listToFinal;
 	}
 
+	@Override
+	public List<EstudianteLigeroTO> consultAllToLiger() {
+		// TODO Auto-generated method stub
+		List<Estudiante> ls = this.estudianteRepository.selectAll("F");
+		List<EstudianteLigeroTO> lsTo = new ArrayList<>();
+
+		for(Estudiante res: ls) {
+			EstudianteLigeroTO convers = this.conversionLigero(this.conversion(res));
+			lsTo.add(convers);
+		}
+		
+		return lsTo;
+	}
+
 	private EstudianteTO conversion(Estudiante estudiante) {
 		EstudianteTO estuTo = new EstudianteTO();
 		estuTo.setApellido(estudiante.getApellido());
@@ -76,6 +91,33 @@ public class EstudianteServiceImpl implements IEstudianteService {
 		estuTo.setGenero(estudiante.getGenero());
 		estuTo.setId(estudiante.getId()); // ?
 		estuTo.setNombre(estudiante.getNombre());
+		estuTo.setCarrera(estudiante.getCarrera());
+		estuTo.setDireccion(estudiante.getDireccion());
+		estuTo.setEdad(estudiante.getEdad());
+		estuTo.setFacultad(estudiante.getFacultad());
+		estuTo.setGratuidad(estudiante.getGratuidad());
 		return estuTo;
 	}
+
+	@Override
+	public EstudianteTO buscarTO(Integer id) {
+		// TODO Auto-generated method stub
+		return this.conversion(this.estudianteRepository.seleccionar(id));
+	}
+
+	private EstudianteLigeroTO conversionLigero(EstudianteTO estudianteTO) {
+		EstudianteLigeroTO estLTo = new EstudianteLigeroTO();
+		estLTo.setId(estudianteTO.getId());
+		estLTo.setNombre(estudianteTO.getNombre());
+		estLTo.setApellido(estudianteTO.getApellido());
+		estLTo.setCarrera(estudianteTO.getCarrera());
+		return estLTo;
+	}
+
+	@Override
+	public EstudianteLigeroTO buscarLigeroTO(Integer id) {
+		// TODO Auto-generated method stub
+		return this.conversionLigero(this.conversion(this.estudianteRepository.seleccionar(id)));
+	}
+
 }

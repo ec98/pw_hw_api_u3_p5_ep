@@ -1,8 +1,12 @@
 package com.example.demo.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.repository.modelo.Estudiante;
 import com.example.demo.service.IEstudianteService;
 import com.example.demo.service.IMateriaService;
+import com.example.demo.service.to.EstudianteLigeroTO;
 import com.example.demo.service.to.EstudianteTO;
 import com.example.demo.service.to.MateriaTO;
 
@@ -37,60 +42,17 @@ public class EstudianteControllerRestFul {
 
 	@Autowired
 	private IMateriaService materiaService;
-	// Metodos: capacidades
-//	@PostMapping(path = "/guardar")
-//	public void guardar(@RequestBody Estudiante estudiante) {
-//		this.estudianteService.guardar(estudiante);
-//	}
-
-	// PATH VARIABLE: <<especificar un dato>>
-	// example: /buscar/{id}
-//	@GetMapping(path = "/buscar/{id}/{nombre}")
-//	public Estudiante buscar(@PathVariable int id, @PathVariable String nombre) {
-//		System.out.println(nombre);
-//		return this.estudianteService.buscar(id);
-//	}
-
-//	@DeleteMapping(path = "/borrar/{id}")
-//	public void borrar(@PathVariable int id) {
-//		this.estudianteService.borrar(id);
-//	}
-	// http://localhost:????/API/v1.0/Matricula/estudiantes/buscar
-
-//	@PutMapping(path = "/actualizar")
-//	public void actualizar(@RequestBody Estudiante estudiante) {
-//		this.estudianteService.actualizar(estudiante);
-//	}
-
-//	@PatchMapping(path = "/actualizarParcial")
-//	public void actualizarParcial(@RequestBody Estudiante estudiante) {
-//		this.estudianteService.actualizarParcial(estudiante.getApellido(), estudiante.getNombre(), estudiante.getId());
-//	}
-
-	// REQUEST PARAM <<filtrar o consultar todo>>
-	// example: /estudiantes/listEstudiante?genero=Masculino
-	// two o more REQUEST PARAM
-	// example: /estudiantes/listEstudiante?genero=Masculino&contador=40
-//	@GetMapping(path = "/listEstudiante")
-//	public List<Estudiante> listaEstudiante(@RequestParam String genero, @RequestParam int contador){
-//		
-//		while(contador >= 10) {
-//			contador++;
-//			System.out.println(contador);
-//		}
-//		return this.estudianteService.consultAll(genero);
-//	}
 
 	// Buscar a partir de la ID.
-	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_XML_VALUE)
-	public ResponseEntity<Estudiante> consultar(@PathVariable int id) {
-		// 240: grupo satisfactorias
-		// 240: recurso ESTUDIANTE encontrado satisfactoriamente
-		Estudiante estu = this.estudianteService.buscar(id);
-//		int status = 241; // seteando codigo
+	@GetMapping(path = "tmp/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EstudianteTO> consultar(@PathVariable int id) {
+		EstudianteTO estu = this.estudianteService.buscarTO(id);
 
-		// http status code
-//		HttpStatusCode -> HttpStatus.METHOD_NOT_ALLOWED
+		Link link = linkTo(methodOn(EstudianteControllerRestFul.class).consultMateriaId(estu.getId()))
+				.withRel("materias");
+
+		estu.add(link);
+
 		return ResponseEntity.status(HttpStatus.OK).body(estu);
 	}
 
@@ -106,9 +68,40 @@ public class EstudianteControllerRestFul {
 		return new ResponseEntity<>(estu, cabeceras, status);
 	}
 
+	@GetMapping(path = "/esto/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EstudianteTO> consultarTO(@PathVariable int id) {
+		EstudianteTO estu = this.estudianteService.buscarTO(id);
+
+		Link link = linkTo(methodOn(EstudianteControllerRestFul.class).consultMateriaId(estu.getId()))
+				.withRel("materias");
+
+		estu.add(link);
+
+		return ResponseEntity.status(HttpStatus.OK).body(estu);
+	}
+
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<EstudianteLigeroTO>> selectAllHateoasLigero() {
+		List<EstudianteLigeroTO> estuTo = this.estudianteService.consultAllToLiger();
+
+		for (EstudianteLigeroTO eto : estuTo) {
+			Link link = linkTo(methodOn(EstudianteControllerRestFul.class).consultarTO(eto.getId())).withSelfRel();
+			eto.add(link);
+		}
+
+		return ResponseEntity.status(HttpStatus.OK).body(estuTo);
+	}
+
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EstudianteTO>> selectAllHateoas() {
 		List<EstudianteTO> estuTo = this.estudianteService.consultAllTo();
+
+		for (EstudianteTO eto : estuTo) {
+			Link link = linkTo(methodOn(EstudianteControllerRestFul.class).consultMateriaId(eto.getId()))
+					.withRel("materias");
+			eto.add(link);
+		}
+
 		return ResponseEntity.status(HttpStatus.OK).body(estuTo);
 	}
 
