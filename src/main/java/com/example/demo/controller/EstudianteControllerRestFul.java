@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,6 +36,8 @@ import com.example.demo.service.to.MateriaTO;
 //servicio -> controller: clase controller
 @RestController // tambien se le conoce como servicio
 @RequestMapping(path = "/estudiantes")
+@CrossOrigin
+//(value = "http://localhost:8086")
 public class EstudianteControllerRestFul {
 
 	@Autowired
@@ -81,13 +84,12 @@ public class EstudianteControllerRestFul {
 	}
 
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<EstudianteLigeroTO>> selectAllHateoasLigero() {
-		List<EstudianteLigeroTO> estuTo = this.estudianteService.consultAllToLiger();
+	public ResponseEntity<EstudianteLigeroTO> consultLigeroTO(@PathVariable int id) {
+		EstudianteLigeroTO estuTo = this.estudianteService.buscarLigeroTO(id);
 
-		for (EstudianteLigeroTO eto : estuTo) {
-			Link link = linkTo(methodOn(EstudianteControllerRestFul.class).consultarTO(eto.getId())).withSelfRel();
-			eto.add(link);
-		}
+		Link link = linkTo(methodOn(EstudianteControllerRestFul.class).consultarTO(estuTo.getId()))
+				.withRel("EstudianteTO");
+		estuTo.add(link);
 
 		return ResponseEntity.status(HttpStatus.OK).body(estuTo);
 	}
@@ -119,7 +121,7 @@ public class EstudianteControllerRestFul {
 	// @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE, produces =
 	// MediaType.APPLICATION_XML_VALUE)
 	// "produces" es para tipo de retorno
-	@PostMapping(consumes = MediaType.APPLICATION_XML_VALUE)
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void guardar(@RequestBody Estudiante estudiante) {
 		this.estudianteService.guardar(estudiante);
 	}
@@ -136,7 +138,7 @@ public class EstudianteControllerRestFul {
 		this.estudianteService.actualizarParcial(estudiante.getApellido(), estudiante.getNombre(), id);
 	}
 
-	@DeleteMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@DeleteMapping(path = "/{id}")
 	public void borrar(@PathVariable int id) {
 		this.estudianteService.borrar(id);
 	}

@@ -25,6 +25,6 @@ public interface IEstudianteService {
 	
 	public List<EstudianteTO> consultAllTo();
 	
-	public List<EstudianteLigeroTO> consultAllToLiger();
+//	public EstudianteLigeroTO consultLiger();
 	
 }

@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,19 +69,20 @@ public class EstudianteServiceImpl implements IEstudianteService {
 		return listToFinal;
 	}
 
-	@Override
-	public List<EstudianteLigeroTO> consultAllToLiger() {
-		// TODO Auto-generated method stub
-		List<Estudiante> ls = this.estudianteRepository.selectAll("F");
-		List<EstudianteLigeroTO> lsTo = new ArrayList<>();
-
-		for(Estudiante res: ls) {
-			EstudianteLigeroTO convers = this.conversionLigero(this.conversion(res));
-			lsTo.add(convers);
-		}
-		
-		return lsTo;
-	}
+//	@Override
+//	public EstudianteLigeroTO consultLiger() {
+//		// TODO Auto-generated method stub
+//		List<EstudianteTO> lsto = this.consultAllTo();
+//		EstudianteLigeroTO estolto = new EstudianteLigeroTO();
+//
+//		EstudianteLigeroTO convert = this.conversionLigero(lsto);
+//		estolto.setId(convert.getId());
+//		estolto.setApellido(convert.getApellido());
+//		estolto.setCarrera(convert.getCarrera());
+//		estolto.setNombre(convert.getNombre());
+//		return estolto;
+//
+//	}
 
 	private EstudianteTO conversion(Estudiante estudiante) {
 		EstudianteTO estuTo = new EstudianteTO();
