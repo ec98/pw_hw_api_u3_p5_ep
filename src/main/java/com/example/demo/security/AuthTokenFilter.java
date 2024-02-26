@@ -31,6 +31,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 		try {
 			String jwt = this.parseJwt(request);
 			if (jwt != null && this.jwtUtils.validateJwt(jwt)) {
+				
+				//genera un token con el nombre de usuario
 				String userName = this.jwtUtils.getUserNameFromjwtToken(jwt);
 
 				// Autenticacion
@@ -42,12 +44,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			LOG.error("ERROR	", e);
+			LOG.error("ERROR JwtUtils", e);
 		}
 		filterChain.doFilter(request, response);
 	}
 
 	private String parseJwt(HttpServletRequest request) {
+		
+		//ya es el token
 		String hearderAuth = request.getHeader("Authorization");
 		if (StringUtils.hasText(hearderAuth) && hearderAuth.startsWith("Bearer ")) {
 			return hearderAuth.substring(7, hearderAuth.length());
